@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        TransactionType
+  amount      Float
+  description String?
+  fruitName   String?
+  quantity    Float?
+  pricePerUnit Float?
+  paymentType PaymentType @default(CASH)
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  payments    Payment[]
+}
+
+model Payment {
+  id           String   @id @default(cuid())
+  transactionId String
+  provider     PaymentProvider
+  referenceId  String?
+  amount       Float
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentType {
+  CASH
+  DIGITAL
+}
+
+enum PaymentProvider {
+  PAYTM
+  UPI
+  PHONEPE
+  OTHER
+}
