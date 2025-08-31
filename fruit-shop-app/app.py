@@ -3,6 +3,11 @@ from datetime import datetime, timedelta
 from database import db, Transaction, init_db
 from utils import validate_transaction_data, get_analytics_data, generate_chart, generate_payment_chart, export_to_csv, export_to_pdf
 import io
+import os
+
+EDGE_CONFIG = os.getenv("EDGE_CONFIG")
+
+print("Using Edge Config:", EDGE_CONFIG)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
