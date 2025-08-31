@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit & Juice Shop Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-store"></i> Fruit & Juice Shop Management</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- Transaction Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
+                </div>
+                <div class="card-body">
+                    <form id="transactionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="date">Date *</label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="type">Type *</label>
+                                <select id="type" name="type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">Amount (₹) *</label>
+                                <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input type="text" id="description" name="description" placeholder="Enter description">
+                            </div>
+                            <div class="form-group">
+                                <label for="payment_method">Payment Method</label>
+                                <select id="payment_method" name="payment_method">
+                                    <option value="cash">Cash</option>
+                                    <option value="digital">Digital (Paytm/UPI/PhonePe)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fruit_name">Fruit Name (Optional)</label>
+                                <input type="text" id="fruit_name" name="fruit_name" placeholder="e.g., Apple, Orange">
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity (Optional)</label>
+                                <input type="number" id="quantity" name="quantity" step="0.01" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="price_per_unit">Price per Unit (Optional)</label>
+                                <input type="number" id="price_per_unit" name="price_per_unit" step="0.01" min="0">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Transaction
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card income">
+                    <div class="stat-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Income</h3>
+                        <p class="stat-value" id="totalIncome">₹0.00</p>
+                    </div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Expenses</h3>
+                        <p class="stat-value" id="totalExpenses">₹0.00</p>
+                    </div>
+                </div>
+                <div class="stat-card profit">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Profit</h3>
+                        <p class="stat-value" id="totalProfit">₹0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-bar"></i> Analytics Dashboard</h2>
+                </div>
+                <div class="card-body">
+                    <div class="date-filter">
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="loadAnalytics()">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearDateFilter()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                    
+                    <div class="analytics-content">
+                        <div class="analytics-summary">
+                            <div class="summary-item">
+                                <h4>Average Daily Income</h4>
+                                <p id="avgDailyIncome">₹0.00</p>
+                            </div>
+                            <div class="summary-item">
+                                <h4>Average Daily Expenses</h4>
+                                <p id="avgDailyExpenses">₹0.00</p>
+                            </div>
+                            <div class="summary-item">
+                                <h4>Average Daily Profit</h4>
+                                <p id="avgDailyProfit">₹0.00</p>
+                            </div>
+                            <div class="summary-item">
+                                <h4>Total Days</h4>
+                                <p id="totalDays">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="charts-container">
+                            <div class="chart-item">
+                                <h4>Financial Overview (Line Chart)</h4>
+                                <img id="lineChart" src="" alt="Line Chart">
+                            </div>
+                            <div class="chart-item">
+                                <h4>Financial Overview (Bar Chart)</h4>
+                                <img id="barChart" src="" alt="Bar Chart">
+                            </div>
+                            <div class="chart-item">
+                                <h4>Payment Methods</h4>
+                                <img id="paymentChart" src="" alt="Payment Chart">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-download"></i> Export Reports</h2>
+                </div>
+                <div class="card-body">
+                    <div class="export-options">
+                        <button type="button" class="btn btn-success" onclick="exportCSV()">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="exportPDF()">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions List -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+                    <button type="button" class="btn btn-danger" onclick="deleteAllTransactions()">
+                        <i class="fas fa-trash"></i> Delete All
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                    <th>Payment Method</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsList">
+                                <!-- Transactions will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Transaction</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDate">Date *</label>
+                            <input type="date" id="editDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editType">Type *</label>
+                            <select id="editType" name="type" required>
+                                <option value="income">Income</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAmount">Amount (₹) *</label>
+                            <input type="number" id="editAmount" name="amount" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDescription">Description</label>
+                            <input type="text" id="editDescription" name="description">
+                        </div>
+                        <div class="form-group">
+                            <label for="editPaymentMethod">Payment Method</label>
+                            <select id="editPaymentMethod" name="payment_method">
+                                <option value="cash">Cash</option>
+                                <option value="digital">Digital (Paytm/UPI/PhonePe)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editFruitName">Fruit Name</label>
+                            <input type="text" id="editFruitName" name="fruit_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="editQuantity">Quantity</label>
+                            <input type="number" id="editQuantity" name="quantity" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editPricePerUnit">Price per Unit</label>
+                            <input type="number" id="editPricePerUnit" name="price_per_unit" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Action</h3>
+                <span class="close" onclick="closeConfirmModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to perform this action?</p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="confirmBtn">Confirm</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
