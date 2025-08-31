@@ -1,4 +1,4 @@
-# 🍎 Fruit Shop Manager
+# 🍎 Fruit Shop Manager - https://fruit-shop-manager.vercel.app/
 
 A full-stack **Fruit Shop Management System** built with **Next.js, Prisma, and Node.js**, designed to manage fruit inventory, expenses, and sales with a modern responsive UI.
 
@@ -23,4 +23,3 @@ A full-stack **Fruit Shop Management System** built with **Next.js, Prisma, and 
 
 ---
 
-## 📂 Project Structure
